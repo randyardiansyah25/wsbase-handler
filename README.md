@@ -1,6 +1,6 @@
 # WSBASE-HANDLER
 
-![alt text](https://github.com/randyardiansya25/wsbase-handler/golang.png?raw=true)
+![alt text](https://github.com/randyardiansyah25/wsbase-handler/blob/master/golang.png?raw=true)
 
 Websocket framework base on [gorilla/websocket](https://github.com/gorilla/websocket). Terdapat 2 jenis pengunaan :
 
