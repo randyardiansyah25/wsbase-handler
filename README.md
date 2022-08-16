@@ -7,6 +7,11 @@ Websocket framework base on [gorilla/websocket](https://github.com/gorilla/webso
 1. **websocket server** dapat diimplementasi dengan mudah.
 2. **websocket client** yang dapat melakukan koneksi ulang ke server secara otomatis apabila koneksi terputus.
 
+## Example
+
+* [Server example](https://github.com/randyardiansyah25/wsbase-handler/sample/server)
+* [Client example](https://github.com/randyardiansyah25/wsbase-handler/sample/client)
+
 ## **Instalasi**
 
 ```terminal
