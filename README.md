@@ -9,8 +9,8 @@ Websocket framework base on [gorilla/websocket](https://github.com/gorilla/webso
 
 ## Example
 
-* [Server example](https://github.com/randyardiansyah25/wsbase-handler/sample/server)
-* [Client example](https://github.com/randyardiansyah25/wsbase-handler/sample/client)
+* [Server example](https://github.com/randyardiansyah25/wsbase-handler/tree/master/sample/server)
+* [Client example](https://github.com/randyardiansyah25/wsbase-handler/tree/master/sample/client)
 
 ## **Instalasi**
 
