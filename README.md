@@ -85,7 +85,7 @@ Merupakan adapter yang dapat digunakan untuk penangan informasi pesan dikirim ol
 func Run()
 ```
 
-Method ```Run()``` digunakan untuk menjalankan operasi hub. Pemanggilan terhadap method ini bersifat blocking. Dapat dijalankan pada *goroutine* jika ada operasi atau statement lanjutkan pada aplikasi.
+Method ```Run()``` digunakan untuk menjalankan operasi hub. Pemanggilan terhadap method ini bersifat blocking. Dapat dijalankan pada *goroutine* jika ada operasi atau statement lanjutan pada aplikasi.
 
 ```go
 func RegisterClient(id string, w http.ResponseWriter, r *http.Request) error
@@ -113,7 +113,7 @@ Method ```PushMessage()``` method yang digunakan untuk melakukan pengiriman pesa
 
 #### Contoh Penggunaan
 
-Contoh implementasi menggunakan http router framework
+Contoh implementasi menggunakan http router framework dari [gin-gonic](https://github.com/gin-gonic/gin)
 
 ```go
 package main
