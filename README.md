@@ -69,7 +69,7 @@ const (
 )
 ```
 
-Konstanta ini digunakan untuk menentukan tipe pesan yang akan dikirim. ```TypeBroadcast``` untuk menentukan pesan broadcast yang akan dikirim ke seluruh client terdaftar. ```TypePrivate``` menentukan pesan berupa private yang akan dikirim ke satu atau beberapa client.
+Konstanta ini digunakan untuk menentukan tipe pesan yang akan dikirim. ```TypeBroadcast``` untuk menentukan pesan *broadcast* yang akan dikirim ke seluruh client terdaftar. ```TypePrivate``` menentukan pesan berupa *private* yang akan dikirim ke satu atau beberapa client.
 
 #### **Types**
 
@@ -85,7 +85,7 @@ Merupakan adapter yang dapat digunakan untuk penangan informasi pesan dikirim ol
 func Run()
 ```
 
-Method ```Run()``` digunakan untuk menjalankan operasi hub. Pemanggilan terhadap method ini bersifat blocking. Dapat dijalankan pada *goroutine* jika ada operasi/statement lanjutan pada aplikasi.
+Method ```Run()``` digunakan untuk menjalankan operasi hub. Pemanggilan terhadap method ini bersifat blocking. Dapat dijalankan pada *goroutine* jika ada operasi atau statement lanjutkan pada aplikasi.
 
 ```go
 func RegisterClient(id string, w http.ResponseWriter, r *http.Request) error
@@ -93,9 +93,9 @@ func RegisterClient(id string, w http.ResponseWriter, r *http.Request) error
 
 Method ```RegisterClient()``` digunakan untuk mendaftarkan koneksi websocket dari client. Biasa digunakan pada http router.
 
-Parameter ```id string``` digunakan sebagan identitas dari setiap koneksi websocket dari client.
+Parameter ```id string``` digunakan sebagai identitas dari setiap koneksi websocket dari client.
 
-Parameter ```w http.ResponseWriter``` merupakan interface yang digunakan sebagai HTTP handler untuk melakukan kontuksi/membuat respons HTTP.
+Parameter ```w http.ResponseWriter``` merupakan interface yang digunakan sebagai HTTP handler untuk melakukan kontruksi atau membuat respons HTTP.
 
 Parameter ```r *http.Request``` merupakan representasi suatu request HTTP yang diterima oleh server atau yang dikirim oleh client.
 
@@ -180,7 +180,7 @@ client := NewWSClient("addr", "/path/to", false)
 client.Start()
 ```
 
-Parameter pertama, diisi alamat dari websocket server. Parameter kedua diisi dengan path dari endpoint websocket server. Parameter ketiga diisi true jika menggunakan secure websocket (wss), diisi false jika tidak menggunakan secure websocket(ws).
+Parameter pertama, diisi alamat dari websocket server. Parameter kedua diisi dengan path dari endpoint websocket server. Parameter ketiga diisi ```true``` jika menggunakan secure websocket (wss), diisi ```false``` jika tidak menggunakan secure websocket(ws).
 
 
 #### **Const**
@@ -210,13 +210,13 @@ type LogHandler func(logType int, val string)
 
 Merupakan adapater yang digunakan untuk penanganan log jika digunakan. Secara *default* output yang dicetak ke layar menggunakan *```built in function```* dari framework ini.
 
-#### **Method***
+#### **Method**
 
 ```go
 SetMessageHandler(MessageHandler)
 ```
 
-Method ini dapat digunakan untuk mengirim *handler function*  ke framework. Saat objek *websocke client* menerima pesan, *handler function* ini akan panggil.
+Method ini dapat digunakan untuk mengirim *handler function*  ke framework. Saat objek *websocket client* menerima pesan, *handler function* ini akan panggil.
 
 ```go
 SetLogHandler(LogHandler)
