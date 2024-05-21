@@ -107,7 +107,7 @@ func (h *hubimpl) RegisterClient(id string, w http.ResponseWriter, r *http.Reque
 	h.Register <- client
 
 	go readPump(h, client)
-	go writePump(h, client)
+	go writePump(client)
 	return
 }
 
@@ -153,7 +153,7 @@ func readPump(h *hubimpl, c *Client) {
 	}
 }
 
-func writePump(h *hubimpl, c *Client) {
+func writePump(c *Client) {
 	ticker := time.NewTicker(pingPeriod)
 
 	defer func() {

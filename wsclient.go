@@ -17,6 +17,7 @@ type WSClient interface {
 	SetMessageHandler(MessageHandler)
 	SetLogHandler(LogHandler)
 	SetReconnectPeriod(time.Duration)
+	SendMessage(Message)
 	Start() error
 	// Close() error
 }
@@ -181,4 +182,16 @@ func (c *wsclientimpl) close() (er error) {
 	er = c.conn.WriteMessage(websocket.CloseMessage, websocket.FormatCloseMessage(websocket.CloseNormalClosure, ""))
 	<-time.After(time.Second)
 	return er
+}
+
+func (c *wsclientimpl) SendMessage(message Message) {
+	b, er := json.Marshal(message)
+	if er != nil {
+		c.printlog(ERR, "[wsbase] Error while marshal message : ", er.Error())
+		return
+	}
+
+	if er := c.conn.WriteMessage(websocket.TextMessage, b); er != nil {
+		c.printlog(ERR, er.Error())
+	}
 }
