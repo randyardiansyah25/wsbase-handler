@@ -141,6 +141,9 @@ func readPump(h *hubimpl, c *Client) {
 			} else if websocket.IsCloseError(er, websocket.CloseGoingAway, websocket.CloseAbnormalClosure) {
 				fmt.Println("Getting closing client :", er.Error())
 				break
+			} else {
+				fmt.Println("Getting unknown closing client : ", er.Error())
+				break
 			}
 		}
 		smessage := Message{}

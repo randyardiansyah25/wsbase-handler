@@ -173,7 +173,7 @@ func main() {
 
 ### **Client Overview**
 
-##### **Initialize**
+#### **Initialize**
 
 ```go
 client := NewWSClient("addr", "/path/to", false)
@@ -235,6 +235,12 @@ Start() error
 ```
 
 Method ini digunakan untuk menjalankan *```websocket client```*.
+
+```go
+SendMessage(Message)
+```
+
+Method ini digunakan untuk client mengirim pesan berbentu object dari *Message*
 
 #### Contoh Penggunaan
 
