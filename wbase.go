@@ -29,6 +29,7 @@ type Hub interface {
 	RegisterClient(id string, w http.ResponseWriter, r *http.Request) error
 	SetOnReadMessageFunc(OnReadMessageFunc)
 	PushMessage(Message)
+	SetLogHandler(LogHandler)
 }
 
 func NewHub() Hub {
@@ -53,6 +54,7 @@ type hubimpl struct {
 	Unregister        chan *Client
 	upgrader          websocket.Upgrader
 	onReadMsg         OnReadMessageFunc
+	loghandler        LogHandler
 }
 
 func (h *hubimpl) Run() {
@@ -127,7 +129,7 @@ func readPump(h *hubimpl, c *Client) {
 	c.Conn.SetReadDeadline(time.Now().Add(pongWait))
 	c.Conn.SetPongHandler(func(appData string) error {
 		nextTime := time.Now().Add(pongWait)
-		fmt.Println("Get pong from [", c.Id, "], renew pong wait to ", nextTime.Format("15:04:05"))
+		h.printlog(LOG, "Get pong from [", c.Id, "], renew pong wait to ", nextTime.Format("15:04:05"))
 		c.Conn.SetReadDeadline(nextTime)
 		return nil
 	})
@@ -136,24 +138,28 @@ func readPump(h *hubimpl, c *Client) {
 		_, message, er := c.Conn.ReadMessage()
 		if er != nil {
 			if websocket.IsUnexpectedCloseError(er, websocket.CloseGoingAway, websocket.CloseAbnormalClosure) {
-				fmt.Println("Getting unexpected closing client :", er.Error())
+				h.printlog(ERR, "Getting unexpected closing client :", er.Error())
 				break
 			} else if websocket.IsCloseError(er, websocket.CloseGoingAway, websocket.CloseAbnormalClosure) {
-				fmt.Println("Getting closing client :", er.Error())
+				h.printlog(ERR, "Getting closing client :", er.Error())
 				break
 			} else {
-				fmt.Println("Getting unknown closing client : ", er.Error())
+				h.printlog(ERR, "Getting unknown closing client : ", er.Error())
 				break
 			}
 		}
+
 		smessage := Message{}
-		fmt.Println("string msg", string(message))
+		h.printlog(LOG, "RECV,", c.Id, ",", string(message))
 		_ = json.Unmarshal(message, &smessage)
-		fmt.Println("getting message :", &message)
 		if h.onReadMsg != nil {
 			h.onReadMsg(string(message))
 		}
 	}
+}
+
+func (h hubimpl) printlog(logtype int, val ...interface{}) {
+	h.loghandler(logtype, fmt.Sprint(val...))
 }
 
 func writePump(c *Client) {
@@ -190,4 +196,8 @@ func writePump(c *Client) {
 		}
 	}
 
+}
+
+func (h *hubimpl) SetLogHandler(handler LogHandler) {
+	h.loghandler = handler
 }

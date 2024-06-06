@@ -3,7 +3,6 @@ package wsbase
 import (
 	"encoding/json"
 	"fmt"
-	"log"
 
 	"net/url"
 	"os"
@@ -22,12 +21,7 @@ type WSClient interface {
 	// Close() error
 }
 
-func logHandlerImpl(logType int, val string) {
-	log.Println(val)
-}
-
 type MessageHandler func(Message)
-type LogHandler func(logType int, val string)
 
 func NewWSClient(addr string, path string, secure bool) WSClient {
 	inst := &wsclientimpl{
@@ -37,7 +31,7 @@ func NewWSClient(addr string, path string, secure bool) WSClient {
 		reconnectPeriod:  10 * time.Second,
 		interrupt:        make(chan os.Signal, 1),
 		disconnectSignal: make(chan bool),
-		loghandler:       logHandlerImpl,
+		loghandler:       PrintDefault,
 	}
 
 	return inst
