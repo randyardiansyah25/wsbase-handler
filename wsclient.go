@@ -93,12 +93,13 @@ func (c *wsclientimpl) connect() (er error) {
 	}
 
 	wsserverUrl := url.URL{Scheme: scheme, Host: c.addr, Path: c.path}
-	c.printlog(LOG, "connecting to ", wsserverUrl.String())
 	c.conn, _, er = websocket.DefaultDialer.Dial(wsserverUrl.String(), nil)
 
 	if er != nil {
 		return
 	}
+
+	c.printlog(LOG, "connected with ", wsserverUrl.String())
 
 	go c.messageHandler()
 
