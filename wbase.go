@@ -43,7 +43,8 @@ func NewHub() Hub {
 				return true
 			},
 		},
-		onReadMsg: nil,
+		onReadMsg:  nil,
+		loghandler: PrintDefault,
 	}
 }
 
