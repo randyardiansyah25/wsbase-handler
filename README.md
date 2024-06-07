@@ -12,6 +12,10 @@ Websocket framework base on [gorilla/websocket](https://github.com/gorilla/webso
 * [Server example](https://github.com/randyardiansyah25/wsbase-handler/tree/master/sample/server)
 * [Client example](https://github.com/randyardiansyah25/wsbase-handler/tree/master/sample/client)
 
+### Advance Client Server
+* [Server](https://github.com/randyardiansyah25/server-ws-dummy)
+* [Client](https://github.com/randyardiansyah25/ws-client-master)
+
 ## **Instalasi**
 
 ```terminal
