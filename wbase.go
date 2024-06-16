@@ -3,10 +3,14 @@ package wsbase
 import (
 	"encoding/json"
 	"fmt"
+	"net"
 	"net/http"
+	"os"
+	"syscall"
 	"time"
 
 	"github.com/randyardiansyah25/wsbase-handler/common/slices"
+	"github.com/randyardiansyah25/wsbase-handler/common/winnet"
 
 	"github.com/gorilla/websocket"
 )
@@ -138,16 +142,32 @@ func readPump(h *hubimpl, c *Client) {
 	for {
 		_, message, er := c.Conn.ReadMessage()
 		if er != nil {
+			isCloseError := false
 			if websocket.IsUnexpectedCloseError(er, websocket.CloseGoingAway, websocket.CloseAbnormalClosure) {
 				h.printlog(ERR, "Getting unexpected closing client :", er.Error())
-				break
+				isCloseError = true
 			} else if websocket.IsCloseError(er, websocket.CloseGoingAway, websocket.CloseAbnormalClosure) {
-				h.printlog(ERR, "Getting closing client :", er.Error())
-				break
-			} else {
-				h.printlog(ERR, "Getting unknown closing client : ", er.Error())
-				break
+				h.printlog(ERR, "Getting closing client [", c.Id, "] :", er.Error())
+				isCloseError = true
+			} else if opErr, ok := er.(*net.OpError); ok {
+				if sysErr, ok := opErr.Err.(*os.SyscallError); ok {
+					if errno, ok := sysErr.Err.(syscall.Errno); ok {
+						if errno == syscall.ECONNABORTED || errno == winnet.WSAECONNABORTED {
+							h.printlog(ERR, "closing client [", c.Id, "] : aborted:", er.Error())
+							isCloseError = true
+						} else if errno == syscall.ECONNRESET || errno == winnet.WSAECONNRESET {
+							h.printlog(ERR, "closing client [", c.Id, "] : reset :", er.Error())
+							isCloseError = true
+						}
+					}
+				}
 			}
+
+			if !isCloseError {
+				h.printlog(ERR, "Getting unknown closing client [", c.Id, "] : ", er.Error())
+			}
+
+			break
 		}
 
 		smessage := Message{}

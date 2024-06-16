@@ -10,11 +10,11 @@ import (
 )
 
 func main() {
-	//host := "localhost:8881"
+	host := "localhost:8881"
 	// host := "192.169.253.156:8881"
-	host := "ws.digitalfstech.com"
+	//host := "ws.digitalfstech.com"
 
-	client := wsbase.NewWSClient(host, "/connect/0001", true)
+	client := wsbase.NewWSClient(host, "/connect/0001", false)
 	client.SetLogHandler(func(errType int, val string) {
 		log.Println("ini log custom", val)
 	})
