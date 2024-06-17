@@ -27,6 +27,8 @@ const (
 )
 
 type OnReadMessageFunc func(msg string)
+type OnCloseHandlerFunc func(id string)
+type OnPongHandlerFunc func(id string)
 
 type Hub interface {
 	Run()
@@ -34,6 +36,8 @@ type Hub interface {
 	SetOnReadMessageFunc(OnReadMessageFunc)
 	PushMessage(Message)
 	SetLogHandler(LogHandler)
+	SetOnCloseHandlerFunc(OnCloseHandlerFunc)
+	SetOnPongHandlerFunc(OnPongHandlerFunc)
 }
 
 func NewHub() Hub {
@@ -60,6 +64,8 @@ type hubimpl struct {
 	upgrader          websocket.Upgrader
 	onReadMsg         OnReadMessageFunc
 	loghandler        LogHandler
+	closeHandler      OnCloseHandlerFunc
+	pongHandler       OnPongHandlerFunc
 }
 
 func (h *hubimpl) Run() {
@@ -121,6 +127,15 @@ func (h *hubimpl) RegisterClient(id string, w http.ResponseWriter, r *http.Reque
 func (h *hubimpl) SetOnReadMessageFunc(handler OnReadMessageFunc) {
 	h.onReadMsg = handler
 }
+
+func (h *hubimpl) SetOnCloseHandlerFunc(handler OnCloseHandlerFunc) {
+	h.closeHandler = handler
+}
+
+func (h *hubimpl) SetOnPongHandlerFunc(handler OnPongHandlerFunc) {
+	h.pongHandler = handler
+}
+
 func (h *hubimpl) PushMessage(msg Message) {
 	h.PushClientMessage <- msg
 }
@@ -136,6 +151,9 @@ func readPump(h *hubimpl, c *Client) {
 		nextTime := time.Now().Add(pongWait)
 		h.printlog(LOG, "Get pong from [", c.Id, "], renew pong wait to ", nextTime.Format("15:04:05"))
 		c.Conn.SetReadDeadline(nextTime)
+		if h.closeHandler != nil {
+			go h.pongHandler(c.Id)
+		}
 		return nil
 	})
 
@@ -166,7 +184,9 @@ func readPump(h *hubimpl, c *Client) {
 			if !isCloseError {
 				h.printlog(ERR, "Getting unknown closing client [", c.Id, "] : ", er.Error())
 			}
-
+			if h.closeHandler != nil {
+				h.closeHandler(c.Id)
+			}
 			break
 		}
 

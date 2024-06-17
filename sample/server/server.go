@@ -9,6 +9,13 @@ import (
 
 func main() {
 	hub := wsbase.NewHub()
+	hub.SetOnCloseHandlerFunc(func(id string) {
+		fmt.Println("Ini custom saat menerima info close dari client. client yang terputus : ", id)
+	})
+
+	hub.SetOnPongHandlerFunc(func(id string) {
+		fmt.Println("Kalo ini, custom untuk penanganan pong dari client. Client yang mengirim : ", id)
+	})
 	go hub.Run()
 
 	r := gin.Default()
