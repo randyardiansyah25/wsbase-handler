@@ -13,6 +13,7 @@ Websocket framework base on [gorilla/websocket](https://github.com/gorilla/webso
 * [Client example](https://github.com/randyardiansyah25/wsbase-handler/tree/master/sample/client)
 
 ### Advance Client Server
+
 * [Server](https://github.com/randyardiansyah25/server-ws-dummy)
 * [Client](https://github.com/randyardiansyah25/ws-client-master)
 
@@ -81,7 +82,19 @@ Konstanta ini digunakan untuk menentukan tipe pesan yang akan dikirim. ```TypeBr
 type OnReadMessageFunc func(msg string)
 ```
 
-Merupakan adapter yang dapat digunakan untuk penangan informasi pesan dikirim oleh client atau yang diterima oleh server.
+Merupakan adapter yang dapat digunakan untuk penanganan informasi pesan dikirim oleh client atau yang diterima oleh server.
+
+```go
+type OnCloseHandlerFunc func(id string)
+```
+
+Merupakan adapter yang dapat digunakan untuk penanganan saat websocket client terputus. Parameter yang dikirimkan pada method ini adalah **id** websocket client
+
+```go
+type OnPongHandlerFunc func(id string)
+```
+
+Merupakan adapter yang dapat digunakan untuk penanganan saat websocket client mengirim balasan ping yang dikirim server kepada semua client. Parameter yang dikirimkan pada method ini adalah **id** websocket client
 
 #### **Method**
 
