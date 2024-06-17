@@ -162,19 +162,19 @@ func readPump(h *hubimpl, c *Client) {
 		if er != nil {
 			isCloseError := false
 			if websocket.IsUnexpectedCloseError(er, websocket.CloseGoingAway, websocket.CloseAbnormalClosure) {
-				h.printlog(ERR, "Getting unexpected closing client :", er.Error())
+				h.printlog(WARN, "Getting unexpected closing client :", er.Error())
 				isCloseError = true
 			} else if websocket.IsCloseError(er, websocket.CloseGoingAway, websocket.CloseAbnormalClosure) {
-				h.printlog(ERR, "Getting closing client [", c.Id, "] :", er.Error())
+				h.printlog(WARN, "Getting closing client [", c.Id, "] :", er.Error())
 				isCloseError = true
 			} else if opErr, ok := er.(*net.OpError); ok {
 				if sysErr, ok := opErr.Err.(*os.SyscallError); ok {
 					if errno, ok := sysErr.Err.(syscall.Errno); ok {
 						if errno == syscall.ECONNABORTED || errno == winnet.WSAECONNABORTED {
-							h.printlog(ERR, "closing client [", c.Id, "] : aborted:", er.Error())
+							h.printlog(WARN, "closing client [", c.Id, "] : aborted:", er.Error())
 							isCloseError = true
 						} else if errno == syscall.ECONNRESET || errno == winnet.WSAECONNRESET {
-							h.printlog(ERR, "closing client [", c.Id, "] : reset :", er.Error())
+							h.printlog(WARN, "closing client [", c.Id, "] : reset :", er.Error())
 							isCloseError = true
 						}
 					}
@@ -182,7 +182,7 @@ func readPump(h *hubimpl, c *Client) {
 			}
 
 			if !isCloseError {
-				h.printlog(ERR, "Getting unknown closing client [", c.Id, "] : ", er.Error())
+				h.printlog(WARN, "Getting unknown closing client [", c.Id, "] : ", er.Error())
 			}
 			if h.closeHandler != nil {
 				h.closeHandler(c.Id)
