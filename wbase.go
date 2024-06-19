@@ -6,6 +6,7 @@ import (
 	"net"
 	"net/http"
 	"os"
+	"sync"
 	"syscall"
 	"time"
 
@@ -42,7 +43,6 @@ type Hub interface {
 
 func NewHub() Hub {
 	return &hubimpl{
-		Clients:           make(map[*Client]bool),
 		PushClientMessage: make(chan Message),
 		Register:          make(chan *Client),
 		Unregister:        make(chan *Client),
@@ -57,7 +57,7 @@ func NewHub() Hub {
 }
 
 type hubimpl struct {
-	Clients           map[*Client]bool
+	Clients           sync.Map
 	PushClientMessage chan Message
 	Register          chan *Client
 	Unregister        chan *Client
@@ -72,34 +72,42 @@ func (h *hubimpl) Run() {
 	for {
 		select {
 		case client := <-h.Register:
-			h.Clients[client] = true
+			h.Clients.Store(client, true)
 		case client := <-h.Unregister:
-			delete(h.Clients, client)
+			h.Clients.Delete(client)
 			close(client.Send)
 		case message := <-h.PushClientMessage:
 			{
-				for client := range h.Clients {
+				h.Clients.Range(func(key, value any) bool {
+					client := key.(*Client)
+					ok := true
+
 					if message.SenderId == client.Id {
-						continue
+						ok = false
 					}
+
 					b, er := json.Marshal(message)
 					if er != nil {
 						fmt.Println("[wsbase] Error while marshal message : ", er.Error())
-						continue
+						ok = false
 					}
-					if message.Type == TypeBroadcast {
-						if message.SenderId == client.Id {
-							continue
+
+					if ok {
+						if message.Type == TypeBroadcast {
+							if message.SenderId != client.Id {
+								client.Send <- b
+							}
+							fmt.Println("Broadcast to ", client.Id)
+						} else {
+							if slices.Contains(message.To, client.Id) {
+								client.Send <- b
+								fmt.Println("Publish to ", client.Id)
+							}
 						}
 
-						client.Send <- b
-					} else {
-						if slices.Contains(message.To, client.Id) {
-							client.Send <- b
-						}
 					}
-					//entities.PrintLog("Broadcast to ", client.Id)
-				}
+					return true
+				})
 			}
 		}
 	}
@@ -199,7 +207,7 @@ func readPump(h *hubimpl, c *Client) {
 	}
 }
 
-func (h hubimpl) printlog(logtype int, val ...interface{}) {
+func (h *hubimpl) printlog(logtype int, val ...interface{}) {
 	h.loghandler(logtype, fmt.Sprint(val...))
 }
 
