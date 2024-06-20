@@ -159,7 +159,7 @@ func readPump(h *hubimpl, c *Client) {
 		nextTime := time.Now().Add(pongWait)
 		h.printlog(LOG, "Get pong from [", c.Id, "], renew pong wait to ", nextTime.Format("15:04:05"))
 		c.Conn.SetReadDeadline(nextTime)
-		if h.closeHandler != nil {
+		if h.pongHandler != nil {
 			go h.pongHandler(c.Id)
 		}
 		return nil
