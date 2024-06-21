@@ -29,7 +29,7 @@ const (
 
 type OnReadMessageFunc func(msg string)
 type OnCloseHandlerFunc func(id string)
-type OnPongHandlerFunc func(id string)
+type OnPongHandlerFunc func(id string, nextPongWait time.Time)
 
 type Hub interface {
 	Run()
@@ -157,10 +157,10 @@ func readPump(h *hubimpl, c *Client) {
 	c.Conn.SetReadDeadline(time.Now().Add(pongWait))
 	c.Conn.SetPongHandler(func(appData string) error {
 		nextTime := time.Now().Add(pongWait)
-		h.printlog(LOG, "Get pong from [", c.Id, "], renew pong wait to ", nextTime.Format("15:04:05"))
+		//h.printlog(LOG, "Get pong from [", c.Id, "], renew pong wait to ", nextTime.Format("15:04:05"))
 		c.Conn.SetReadDeadline(nextTime)
 		if h.pongHandler != nil {
-			go h.pongHandler(c.Id)
+			go h.pongHandler(c.Id, nextTime)
 		}
 		return nil
 	})

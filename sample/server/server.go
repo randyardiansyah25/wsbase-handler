@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"time"
 
 	"github.com/gin-gonic/gin"
 	"github.com/randyardiansyah25/wsbase-handler"
@@ -13,8 +14,8 @@ func main() {
 		fmt.Println("Ini custom saat menerima info close dari client. client yang terputus : ", id)
 	})
 
-	hub.SetOnPongHandlerFunc(func(id string) {
-		fmt.Println("Kalo ini, custom untuk penanganan pong dari client. Client yang mengirim : ", id)
+	hub.SetOnPongHandlerFunc(func(id string, nextPongWait time.Time) {
+		fmt.Println("Kalo ini, custom untuk penanganan pong dari client. Client yang mengirim : ", id, ". Pong selanjutnya harus diterima pada : ", nextPongWait.Format("15:04:05"))
 	})
 	go hub.Run()
 
