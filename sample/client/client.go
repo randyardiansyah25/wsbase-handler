@@ -26,8 +26,14 @@ func main() {
 		log.Println("receive message : ")
 		fmt.Println(string(j))
 	})
-	er := client.Start()
+	// er := client.Start()
+	// if er != nil {
+	// 	log.Println("cannot start ws client, error :", er)
+	// }
+
+	go client.Start()
+	er := <-wsbase.WSClientErrorSignal
 	if er != nil {
-		log.Println("cannot start ws client, error :", er)
+		log.Println("cannot start ws client, error :", er.Error())
 	}
 }

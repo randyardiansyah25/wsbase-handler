@@ -213,6 +213,14 @@ const (
 
 Merupakan daftar tipe log yang digunakan untuk pemetaan custom log jika digunakan.
 
+#### **Variables**
+
+```go
+var WSClientErrorSignal = make(chan bool)
+```
+
+Merupakan variable yang dapat digunakan sebagai sinyal error saat method Start() di panggil dalam go routine. False menandakan tidak ada error saat websocket client dijalankan
+
 #### **Types**
 
 ```go

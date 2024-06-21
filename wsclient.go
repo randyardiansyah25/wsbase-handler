@@ -17,9 +17,14 @@ type WSClient interface {
 	SetLogHandler(LogHandler)
 	SetReconnectPeriod(time.Duration)
 	SendMessage(Message)
+
+	/*Start websocket client service. Catch WSClientErrorSignal if this method call inner go routine for error status result.
+	 */
 	Start() error
 	// Close() error
 }
+
+var WSClientErrorSignal = make(chan error)
 
 type MessageHandler func(Message)
 
@@ -68,10 +73,15 @@ func (c *wsclientimpl) Start() (er error) {
 
 	er = c.connect()
 	if er != nil {
+		WSClientErrorSignal <- er
 		return er
 	}
 
-	c.reconnectObserver()
+	er = c.reconnectObserver()
+	if er != nil {
+		WSClientErrorSignal <- er
+		return er
+	}
 	return
 }
 
