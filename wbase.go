@@ -88,7 +88,7 @@ func (h *hubimpl) Run() {
 
 					b, er := json.Marshal(message)
 					if er != nil {
-						fmt.Println("[wsbase] Error while marshal message : ", er.Error())
+						h.printlog(ERR, "[wsbase] Error while marshal message : ", er.Error())
 						ok = false
 					}
 
@@ -97,11 +97,9 @@ func (h *hubimpl) Run() {
 							if message.SenderId != client.Id {
 								client.Send <- b
 							}
-							fmt.Println("Broadcast to ", client.Id)
 						} else {
 							if slices.Contains(message.To, client.Id) {
 								client.Send <- b
-								fmt.Println("Publish to ", client.Id)
 							}
 						}
 
@@ -199,7 +197,6 @@ func readPump(h *hubimpl, c *Client) {
 		}
 
 		smessage := Message{}
-		h.printlog(LOG, "RECV,", c.Id, ",", string(message))
 		_ = json.Unmarshal(message, &smessage)
 		if h.onReadMsg != nil {
 			h.onReadMsg(string(message))
